@@ -287,30 +287,45 @@ public class LightsWorld {
 		}
 	}
 
-	/**
-	 * Container for several reinforcement functions related to Lights world.
-	 * @author denisb
-	 *
-	 */
-	public static class LightsReinforcement {
-		/**
-		 * Penalize every action that does not result in the success state - all lights lit. The intention is to find the shortest path to solution, wasted moves result in increased penalty.
-		 */
-		public static double timeWastedExceptLast(final LightsState oldState, final LightsAction action, final LightsState newState) {
-			return newState.isAllLit() ? 0.0 : -1.0;
-		}
-		/**
-		 * Same as {@link #timeWastedExceptLast(LightsState, LightsAction, LightsState)} except the success state is not distinguished in any way.
-		 */
-		public static double timeWasted(final LightsState oldState, final LightsAction action, final LightsState newState) {
-			return -1.0;
-		}
-		/**
-		 * Only penalize actions that turn off lights, actions that turn them on lead to the solution. Such reinforcement effectively gives away the solution with strong hints.  
-		 */
-		public static double turnedOffLights(final LightsState oldState, final LightsAction action, final LightsState newState) {
-			return newState.isLit(action.getRow(), action.getCol()) ? 0.0 : -1.0;
+	public static abstract class AbstractLightsReinforcement implements ReinforcementFunction {
+		protected abstract double function(final LightsState oldState, final LightsAction action, final LightsState newState);
+
+		@Override
+		public double reinforcement(final QState oldState, QAction action, QState newState) {
+			return this.function((LightsState)oldState, (LightsAction)action, (LightsState)newState);
 		}
 	}
 
+	/**
+	 * Penalize every action that does not result in the success state - all lights lit. The intention is to find the shortest path to solution, wasted moves result in increased penalty.
+	 * @author denisb
+	 */
+	public static class LightsReinforcementTimeWastedExceptLast extends AbstractLightsReinforcement {
+
+		protected double function(final LightsState oldState, final LightsAction action, final LightsState newState) {
+			return newState.isAllLit() ? 0.0 : -1.0;
+		}
+	}
+
+	/**
+	 * Same as {@link LightsReinforcementTimeWastedExceptLast} except the success state is not distinguished in any way.
+	 * @author denisb
+	 */
+	public static class LightsReinforcementTimeWasted extends AbstractLightsReinforcement {
+
+		public double function(final LightsState oldState, final LightsAction action, final LightsState newState) {
+			return -1.0;
+		}
+	}
+
+	/**
+	 * Only penalize actions that turn off lights, actions that turn them on lead to the solution. Such reinforcement effectively gives away the solution with strong hints.  
+	 * @author denisb
+	 */
+	public static class LightsReinforcementTurnedOffLights extends AbstractLightsReinforcement {
+
+		public double function(final LightsState oldState, final LightsAction action, final LightsState newState) {
+			return newState.isLit(action.getRow(), action.getCol()) ? 0.0 : -1.0;
+		}
+	}
 }

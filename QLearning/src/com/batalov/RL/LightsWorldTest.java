@@ -24,6 +24,7 @@ public class LightsWorldTest {
 			System.out.println("Action = " + actionMarshaller.actionToString(action));
 		}
 		final QActionSelectionPolicy policy = BestActionSelectionPolicy.DEFAULT_INSTANCE;
+		final ReinforcementFunction rf = new LightsWorld.LightsReinforcementTimeWasted();
 		final QTable qTable = new HashMapQTable();
 		final QLearningAlgorithm ql = new QLearningAlgorithm(qTable, 1.0, 0.1);
 		for (int i = 0; i < runs; i++) {
@@ -34,7 +35,7 @@ public class LightsWorldTest {
 				final LightsWorld.LightsState oldState = new LightsWorld.LightsState(state);
 				final LightsWorld.LightsAction action = (LightsWorld.LightsAction)ql.selectAction(oldState, policy);
 				state.applyAction(action);
-				final double reinforcement = LightsWorld.LightsReinforcement.timeWasted(oldState, action, state);
+				final double reinforcement = rf.reinforcement(oldState, action, state);
 				System.out.println("a = " + actionMarshaller.actionToString(action) + ", r = " + reinforcement);
 	 			System.out.println();
 				ql.update(oldState, action, state, reinforcement);
