@@ -288,11 +288,11 @@ public class LightsWorld {
 	}
 
 	public static abstract class AbstractLightsReinforcement implements ReinforcementFunction {
-		protected abstract double function(final LightsState oldState, final LightsAction action, final LightsState newState);
+		protected abstract double reinforcement(final LightsState oldState, final LightsAction action, final LightsState newState);
 
 		@Override
 		public double reinforcement(final QState oldState, QAction action, QState newState) {
-			return this.function((LightsState)oldState, (LightsAction)action, (LightsState)newState);
+			return this.reinforcement((LightsState)oldState, (LightsAction)action, (LightsState)newState);
 		}
 	}
 
@@ -302,7 +302,7 @@ public class LightsWorld {
 	 */
 	public static class LightsReinforcementTimeWastedExceptLast extends AbstractLightsReinforcement {
 
-		protected double function(final LightsState oldState, final LightsAction action, final LightsState newState) {
+		protected double reinforcement(final LightsState oldState, final LightsAction action, final LightsState newState) {
 			return newState.isAllLit() ? 0.0 : -1.0;
 		}
 	}
@@ -313,7 +313,7 @@ public class LightsWorld {
 	 */
 	public static class LightsReinforcementTimeWasted extends AbstractLightsReinforcement {
 
-		public double function(final LightsState oldState, final LightsAction action, final LightsState newState) {
+		public double reinforcement(final LightsState oldState, final LightsAction action, final LightsState newState) {
 			return -1.0;
 		}
 	}
@@ -324,7 +324,7 @@ public class LightsWorld {
 	 */
 	public static class LightsReinforcementTurnedOffLights extends AbstractLightsReinforcement {
 
-		public double function(final LightsState oldState, final LightsAction action, final LightsState newState) {
+		public double reinforcement(final LightsState oldState, final LightsAction action, final LightsState newState) {
 			return newState.isLit(action.getRow(), action.getCol()) ? 0.0 : -1.0;
 		}
 	}
