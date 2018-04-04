@@ -8,7 +8,7 @@ import java.util.StringJoiner;
 /**
  * A dumbed-down version of the <A href="https://en.wikipedia.org/wiki/Lights_Out_(game)">Lights Out puzzle</A>, where only the pressed light flips its state, and none of the neighbors.
  * Solving a puzzle means effectively pressing on all the lights exactly once. :) Additionally, the objective is to turn all lights on, not to turn them off.
- * 
+ *
  * @author denisb
  */
 public class LightsWorld {
@@ -51,14 +51,14 @@ public class LightsWorld {
 
 		/**
 		 * Convenience method for naming consistency.
-		 * @return Factory method to create a state with all lights off. 
+		 * @return Factory method to create a state with all lights off.
 		 */
 		public static LightsState allUnLit(final int numRows, final int numCols) {
 			return new LightsState(numRows, numCols);
 		}
 
 		/**
-		 * @return Factory method to create a state with all lights lit. 
+		 * @return Factory method to create a state with all lights lit.
 		 */
 		public static LightsState allLit(final int numRows, final int numCols) {
 			final LightsState result = allUnLit(numRows, numCols);
@@ -68,7 +68,7 @@ public class LightsWorld {
 	
 		/**
 		 * Lights puzzle with specified number of rows and columns. All lights are off.
-		 * @param numRows 
+		 * @param numRows
 		 * @param numCols
 		 */
 		public LightsState(final int numRows, final int numCols) {
@@ -319,7 +319,7 @@ public class LightsWorld {
 	}
 
 	/**
-	 * Only penalize actions that turn off lights, actions that turn them on lead to the solution. Such reinforcement effectively gives away the solution with strong hints.  
+	 * Only penalize actions that turn off lights, actions that turn them on lead to the solution. Such reinforcement effectively gives away the solution with strong hints.
 	 * @author denisb
 	 */
 	public static class LightsReinforcementTurnedOffLights extends AbstractLightsReinforcement {

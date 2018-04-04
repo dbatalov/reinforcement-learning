@@ -21,7 +21,7 @@ public class QLearningAlgorithm {
 
 	/**
 	 * This class supports different implementations of the Q table, hence need to provide one.
-	 * 
+	 *
 	 * @param qTable
 	 */
 	public QLearningAlgorithm(final QTable qTable) {

@@ -166,7 +166,7 @@ public class RocketLanderView extends JPanel {
 		g.setColor(Color.BLUE);
 		final float bodyRadiusMeters = 10;
 		final int bodyRadius = metersToPixels(bodyRadiusMeters); // pixels
-		yRocket -= bodyRadius; 
+		yRocket -= bodyRadius;
 		g.fillArc(xRocket-bodyRadius, yRocket-bodyRadius, bodyRadius*2, bodyRadius*2, (int)Math.round(Math.toDegrees(this.lander.getRotation()+Math.PI)), 180);
 		g.setColor(new Color(0xBCC6CC));
 		g.fillArc(xRocket-bodyRadius, yRocket-bodyRadius, bodyRadius*2, bodyRadius*2, (int)Math.round(Math.toDegrees(this.lander.getRotation())), 180);

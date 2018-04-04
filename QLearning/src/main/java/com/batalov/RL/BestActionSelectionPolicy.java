@@ -16,7 +16,7 @@ public class BestActionSelectionPolicy implements QActionSelectionPolicy {
 	 */
 	public static final BestActionSelectionPolicy RANDOMIZED_INSTANCE = new BestActionSelectionPolicy(true);
 	/**
-	 * does not break ties, chooses the first 
+	 * does not break ties, chooses the first
 	 */
 	public static final BestActionSelectionPolicy NON_RANDOM_INSTANCE = new BestActionSelectionPolicy(false);
 //	public static final BestActionSelectionPolicy DEFAULT_INSTANCE = RANDOMIZED_INSTANCE;

@@ -112,7 +112,7 @@ public class RocketLander {
 		if (!this.crashed() && this.position.getY() <= 0) {
 			// straighten position and stop
 			this.reset((float)this.position.getX());
-			return true;   
+			return true;
 		}
 		else {
 			return false;
@@ -136,7 +136,7 @@ public class RocketLander {
 			this.setBurnRight(false);
 			return true;
 		}
-		return false;  
+		return false;
 	}
 
 	static Point2D positionAfter(final float timeDeltaSec, final Point2D position, final Point2D velocity, final Point2D acceleration) {

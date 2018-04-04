@@ -4,7 +4,7 @@ import java.util.Map;
 
 /**
  * QTable stores the learned action {@link QAction} values for a particular state {@link QState}.
- * 
+ *
  * @author denisb
  */
 public interface QTable {

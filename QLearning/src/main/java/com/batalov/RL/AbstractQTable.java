@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 /**
  * Base implementation o methods that are common to all {@link QTable} implementations.
- * 
+ *
  * @author denisb
  */
 public abstract class AbstractQTable implements QTable {

@@ -39,7 +39,7 @@ public class RocketLanderFrame extends JFrame {
 		final RocketLanderFrame f = new RocketLanderFrame(rl);
 		final Thread simulation = new Thread() {
 			public void run() {
-				final float timeDeltaSec = 0.1f; 
+				final float timeDeltaSec = 0.1f;
 				long t = 0;
 				while (!rl.crashed()) {
 					System.out.println("Time t = " + t);
