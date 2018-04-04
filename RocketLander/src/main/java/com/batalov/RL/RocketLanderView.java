@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import java.net.URL;
 
 /**
  * Rendering of the Rocket Lander in a JPanel. Left arrow on the keyboard fires the left engine and right arrow - the right one.
