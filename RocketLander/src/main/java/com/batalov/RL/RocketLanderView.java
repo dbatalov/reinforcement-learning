@@ -35,8 +35,9 @@ public class RocketLanderView extends JPanel {
 	public RocketLanderView(final RocketLander lander) {
 		this.lander = lander;
 		try {
-			this.stars = ImageIO.read(new File("./resources/stars2.png"));
-			this.ground = ImageIO.read(new File("./resources/surface.png"));
+			ClassLoader cl = this.getClass().getClassLoader();
+			this.stars = ImageIO.read(cl.getResource("stars2.png"));
+			this.ground = ImageIO.read(cl.getResource("surface.png"));
 			this.stars = this.scaleDownBy(this.stars, 2);
 			this.ground = this.scaleDownBy(this.ground, 2);
 		} catch (final IOException ioe) {
