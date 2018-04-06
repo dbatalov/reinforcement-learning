@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/QLearning/QLearning.iml" filepath="$PROJECT_DIR$/QLearning/QLearning.iml" />
       <module fileurl="file://$PROJECT_DIR$/RocketLander/RocketLander.iml" filepath="$PROJECT_DIR$/RocketLander/RocketLander.iml" />
+      <module fileurl="file://$PROJECT_DIR$/simple-parent.iml" filepath="$PROJECT_DIR$/simple-parent.iml" />
     </modules>
   </component>
 </project>

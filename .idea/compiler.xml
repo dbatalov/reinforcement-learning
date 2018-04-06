@@ -13,6 +13,7 @@
     <bytecodeTargetLevel>
       <module name="QLearning" target="1.8" />
       <module name="RocketLander" target="1.8" />
+      <module name="simple-parent" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

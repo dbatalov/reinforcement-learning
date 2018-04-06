@@ -28,10 +28,15 @@ public class RocketLanderViewFX extends Canvas {
     public void update(double time) {
 
     }
+    public void renderSky() {
+        //Instream.
+    }
 
     public void render() {
         GraphicsContext gc = this.getGraphicsContext2D();
         gc.drawImage(this.stars,0, 0);
+        Star star = new Star(100, 100, 5, 10, 30);
+        star.draw(gc);
     }
 
 }
