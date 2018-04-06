@@ -1,9 +1,10 @@
 package com.batalov.RL;
 
 import java.awt.geom.Point2D;
-import java.util.logging.Logger;
 
 import com.batalov.RL.RNG;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Rocket Lander world provides 2D physics simulation of a rocket with 2 engines flying in the gravity force of a celestial body. The objective is to land the rocket ship safely.
@@ -12,7 +13,7 @@ import com.batalov.RL.RNG;
  */
 public class RocketLander {
     @SuppressWarnings("unused")
-    private static final Logger LOG = Logger.getLogger(RocketLander.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(RocketLander.class.getName());
 
     //	private static final Point2D GRAVITY = new Point2D.Float(0, -9.81f); // Earth, m/s^2
     private static final Point2D GRAVITY = new Point2D.Float(0, -1.625f); // Moon, m/s^2

@@ -1,4 +1,4 @@
-package com.batalov.RL;
+package com.batalov.RL.render;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -6,14 +6,14 @@ import javafx.scene.canvas.GraphicsContext;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-public class Star {
-    int cx;
-    int cy;
+public class StarGraphic {
+    double cx;
+    double cy;
     int spikes;
-    int innerRadius;
-    int outerRadius;
+    double innerRadius;
+    double outerRadius;
 
-    public Star(int cx, int cy, int spikes, int innerRadius, int outerRadius) {
+    public StarGraphic(double cx, double cy, int spikes, double innerRadius, double outerRadius) {
         this.cx = cx;
         this.cy = cy;
         this.spikes = spikes;
@@ -27,21 +27,23 @@ public class Star {
          */
         Point2D center = new Point2D(cx, cy);
         Point2D topTip = new Point2D(cx + outerRadius, cy);
-        double angle0 = 2*Math.PI / spikes;
+        double angle0 = 2 * Math.PI / spikes;
         int npoints = this.spikes * 2;
         Point2D[] poly = new Point2D[npoints];
         IntStream.range(0, spikes).forEachOrdered(i -> {
             double outAngle = angle0 * i;
-            double inAngle = angle0/2 + angle0 * i;
+            double inAngle = angle0 / 2 + angle0 * i;
             Point2D outerPoint = new Point2D(cx + outerRadius * Math.sin(outAngle), cy + outerRadius * Math.cos(outAngle));
             Point2D innerPoint = new Point2D(cx + innerRadius * Math.sin(inAngle), cy + innerRadius * Math.cos(inAngle));
-            poly[2*i] = outerPoint;
-            poly[2*i+1] = innerPoint;
+            poly[2 * i] = outerPoint;
+            poly[2 * i + 1] = innerPoint;
         });
         return poly;
     }
 
-    public void draw(GraphicsContext gc) {
+
+
+    public void render(GraphicsContext gc) {
         Point2D[] poly = this.polygon();
         double[] xs = new double[poly.length];
         double[] ys = new double[poly.length];
