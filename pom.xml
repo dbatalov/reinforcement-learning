@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.batalov.RL</groupId>
-    <artifactId>simple-parent</artifactId>
+    <artifactId>reinforcement-learning</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
     <name>RL umbrella project</name>
