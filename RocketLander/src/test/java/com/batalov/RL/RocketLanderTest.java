@@ -24,27 +24,27 @@ public class RocketLanderTest extends Assert {
 		assertEquals(vec.getY(), -5f, delta);
 
 		vec = RocketLander.thrustVector((float)Math.toRadians(-10), 5);
-		assertEquals(vec.getX(), 0.8682409f, delta);
-		assertEquals(vec.getY(), 4.924039f, delta);
-
-		vec = RocketLander.thrustVector((float)Math.toRadians(10), 5);
 		assertEquals(vec.getX(), -0.8682409f, delta);
 		assertEquals(vec.getY(), 4.924039f, delta);
 
+		vec = RocketLander.thrustVector((float)Math.toRadians(10), 5);
+		assertEquals(vec.getX(), 0.8682409f, delta);
+		assertEquals(vec.getY(), 4.924039f, delta);
+
 		vec = RocketLander.thrustVector((float)Math.toRadians(100), 5);
-		assertEquals(vec.getX(), -4.924039f, delta);
-		assertEquals(vec.getY(), -0.86824095f, delta);
+		assertEquals(vec.getX(), 4.924039f, delta);
+		assertEquals(vec.getY(),-0.86824095f, delta);
 
 		vec = RocketLander.thrustVector((float)Math.toRadians(80), 5);
-		assertEquals(vec.getX(), -4.924039f, delta);
-		assertEquals(vec.getY(), 0.86824095f, delta);
+		assertEquals(vec.getX(), 4.924039f, delta);
+		assertEquals(vec.getY(),0.86824095f, delta);
 
 		vec = RocketLander.thrustVector((float)Math.toRadians(-100), 5);
-		assertEquals(vec.getX(), 4.924039f, delta);
-		assertEquals(vec.getY(), -0.86824095f, delta);
+		assertEquals(vec.getX(), -4.924039f, delta);
+		assertEquals(vec.getY(),-0.86824095f, delta);
 
 		vec = RocketLander.thrustVector((float)Math.toRadians(-80), 5);
-		assertEquals(vec.getX(), 4.924039f, delta);
+		assertEquals(vec.getX(), -4.924039f, delta);
 		assertEquals(vec.getY(), 0.86824095f, delta);
 	}
 
