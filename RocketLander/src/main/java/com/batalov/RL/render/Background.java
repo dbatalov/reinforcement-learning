@@ -38,18 +38,16 @@ public class Background {
                 double y_min = y_i * h;
                 Random random = new Random(hash);
                 Random radiusRandom = new Random(hash);
-                //Random angleRandom = new Random(hash);
+                Random angleRandom = new Random(hash);
                 for (int i = 0; i < numStars; ++i) {
-                    //stars.add(new Point2D();
                     double outerRadius = radiusMin + radiusRandom.nextDouble() * (radiusMax - radiusMin);
                     double innerRadius = outerRadius / 2;
                     Point2D pt = new Point2D(x_min + w * random.nextDouble(), y_min + w * random.nextDouble());
-                    stars.add(new Star(vp.toPixelCoordinates(pt), 5, innerRadius, outerRadius));
+                    stars.add(new Star(vp.toPixelCoordinates(pt), 5, innerRadius, outerRadius, angleRandom.nextDouble()));
                 }
             }
         }
         stars.forEach(star -> {
-            log.info("Star center {}", star.center);
             star.render(gc);
         });
     }

@@ -12,12 +12,14 @@ public class Star {
     int spikes;
     double innerRadius;
     double outerRadius;
+    double angle;
 
-    public Star(Point2D center, int spikes, double innerRadius, double outerRadius) {
+    public Star(Point2D center, int spikes, double innerRadius, double outerRadius, double angle) {
         this.center = center;
         this.spikes = spikes;
         this.innerRadius = innerRadius;
         this.outerRadius = outerRadius;
+        this.angle = (2 * Math.PI) / spikes * angle;
     }
     public Star(Star star) {
         center = star.center;
@@ -34,8 +36,8 @@ public class Star {
         int npoints = this.spikes * 2;
         Point2D[] poly = new Point2D[npoints];
         IntStream.range(0, spikes).forEachOrdered(i -> {
-            double outAngle = angle0 * i;
-            double inAngle = angle0 / 2 + angle0 * i;
+            double outAngle = this.angle + angle0 * i;
+            double inAngle = this.angle + angle0 / 2 + angle0 * i;
             Point2D outerPoint = new Point2D(cx + outerRadius * Math.sin(outAngle), cy + outerRadius * Math.cos(outAngle));
             Point2D innerPoint = new Point2D(cx + innerRadius * Math.sin(inAngle), cy + innerRadius * Math.cos(inAngle));
             poly[2 * i] = outerPoint;
