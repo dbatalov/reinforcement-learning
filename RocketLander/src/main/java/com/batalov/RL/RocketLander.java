@@ -1,8 +1,8 @@
 package com.batalov.RL;
 
-import java.awt.geom.Point2D;
 
 import com.batalov.RL.RNG;
+import javafx.geometry.Point2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,37 +13,37 @@ import org.slf4j.LoggerFactory;
  */
 public class RocketLander {
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(RocketLander.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(RocketLander.class.getName());
 
-    //	private static final Point2D GRAVITY = new Point2D.Float(0, -9.81f); // Earth, m/s^2
-    private static final Point2D GRAVITY = new Point2D.Float(0, -1.625f); // Moon, m/s^2
-    private static final Point2D LANDED = new Point2D.Float(0, 0); // when landed, the gravity is compensated by ground resistance
+    //	private static final Point2D GRAVITY = new Point2D.Float(0, -9.81); // Earth, m/s^2
+    private static final Point2D GRAVITY = new Point2D(0, -1.625); // Moon, m/s^2
+    private static final Point2D LANDED = new Point2D(0, 0); // when landed, the gravity is compensated by ground resistance
 
-    private static final float ENGINE_ACCELERATION = 10.0f; // m/s^2, per single engine
+    private static final double ENGINE_ACCELERATION = 10.; // m/s^2, per single engine
 
-    private static final float ROTATION_PER_SEC = (float) Math.toRadians(10);
+    private static final double ROTATION_PER_SEC = Math.toRadians(10);
 
-    private Point2D position = new Point2D.Float(0, 0); // meters along X and Y from "origin"
-    private Point2D velocity = new Point2D.Float(0, 0); // vector, m/s
-    private float rotation; // radians, 0 - means fully vertical, pi/2 rad (90 deg) - facing left, -pi/2 rad (-90 deg) - facing right, pi or -pi (180/-180 deg) - facing down
+    private Point2D position = new Point2D(0, 0); // meters along X and Y from "origin"
+    private Point2D velocity = new Point2D(0, 0); // vector, m/s
+    private double rotation; // radians, 0 - means fully vertical, pi/2 rad (90 deg) - facing left, -pi/2 rad (-90 deg) - facing right, pi or -pi (180/-180 deg) - facing down
     private boolean burnLeft;
     private boolean burnRight;
     private boolean crashed = false;
 
 	/*
 	// to be modeled later
-	private float angularVelocity;
-	private final float emptyWeightKg = 100;
-	private float fuel;
+	private double angularVelocity;
+	private final double emptyWeightKg = 100;
+	private double fuel;
 	*/
 
     public RocketLander() {
-        this.reset((float) this.position.getX());
+        this.reset(this.position.getX());
     }
 
-    private void reset(final float x) {
-        this.position.setLocation(x, 0);
-        this.velocity.setLocation(0, 0);
+    private void reset(final double x) {
+        this.position = new Point2D(x, 0);
+        this.velocity = new Point2D(0, 0);
         this.rotation = 0;
         this.setBurnLeft(false);
         this.setBurnRight(false);
@@ -57,7 +57,10 @@ public class RocketLander {
         return this.velocity;
     }
 
-    public float getRotation() {
+    /**
+     * @return rotation in radians
+     */
+    public double getRotation() {
         return this.rotation;
     }
 
@@ -82,14 +85,16 @@ public class RocketLander {
      *
      * @param timeDeltaSec number of seconds (or fraction of a second) to advance.
      */
-    public void tick(final float timeDeltaSec) {
+    public void tick(final double timeDeltaSec) {
+        log.info("RL pos: {}", this.position);
+        log.info(this.toString());
         if (this.crashed()) { // has side effects
             return; // state does not change after a crash
         }
 
         final Point2D acceleration;
         if (this.burnLeft && this.burnRight) {
-            final float dualEngineAcceleration = 2 * ENGINE_ACCELERATION;
+            final double dualEngineAcceleration = 2 * ENGINE_ACCELERATION;
             final Point2D thrust = thrustVector(this.rotation, dualEngineAcceleration);
             acceleration = add(GRAVITY, thrust);
         } else {
@@ -103,6 +108,7 @@ public class RocketLander {
         this.velocity = velocityAfter(timeDeltaSec, this.velocity, acceleration);
         this.rotation += ((burnLeft ? -1 : 0) + (burnRight ? 1 : 0)) * ROTATION_PER_SEC * timeDeltaSec;
         this.checkLanded(); // has side effects
+        log.info("*RL pos: {}", this.position);
     }
 
     public boolean isOnGround() {
@@ -110,9 +116,9 @@ public class RocketLander {
     }
 
     public boolean checkLanded() {
-        if (!this.crashed() && this.position.getY() <= 0) {
+        if (!this.crashed() && this.position.getY() <= 0.) {
             // straighten position and stop
-            this.reset((float) this.position.getX());
+            //this.reset(this.position.getX());
             return true;
         } else {
             return false;
@@ -122,14 +128,18 @@ public class RocketLander {
     public boolean crashed() {
         if (this.crashed) {
             return true;
-        } else if (this.position.getY() < 0 && (Math.abs(this.velocity.getX()) > 1.0f || this.velocity.getY() < -3.0f || Math.abs(this.rotation) > Math.toRadians(10))) {
+        } else if (this.position.getY() < 0 &&
+                (Math.abs(this.velocity.getX()) > 1.0f
+                        || this.velocity.getY() < -3.0f
+                        || Math.abs(this.rotation) > Math.toRadians(10))) {
+
             this.crashed = true;
             // crash should not result in going into ground too deep
             if (this.position.getY() < -1f) {
-                this.position.setLocation(this.position.getX(), -1); // 1 meter deep
+                this.position = new Point2D(this.position.getX(), -1); // 1 meter deep
             }
             // stop the rocket
-            this.velocity.setLocation(0, 0);
+            this.velocity = new Point2D(0, 0);
             // turn off engines
             this.setBurnLeft(false);
             this.setBurnRight(false);
@@ -138,24 +148,24 @@ public class RocketLander {
         return false;
     }
 
-    static Point2D positionAfter(final float timeDeltaSec, final Point2D position, final Point2D velocity, final Point2D acceleration) {
-        final float newX = (float) (position.getX() + velocity.getX() * timeDeltaSec + acceleration.getX() * timeDeltaSec * timeDeltaSec / 2);
-        final float newY = (float) (position.getY() + velocity.getY() * timeDeltaSec + acceleration.getY() * timeDeltaSec * timeDeltaSec / 2);
-        return new Point2D.Float(newX, newY);
+    static Point2D positionAfter(final double timeDeltaSec, final Point2D position, final Point2D velocity, final Point2D acceleration) {
+        final double newX = (position.getX() + velocity.getX() * timeDeltaSec + acceleration.getX() * timeDeltaSec * timeDeltaSec / 2);
+        final double newY = (position.getY() + velocity.getY() * timeDeltaSec + acceleration.getY() * timeDeltaSec * timeDeltaSec / 2);
+        return new Point2D(newX, newY);
     }
 
-    static Point2D velocityAfter(final float timeDeltaSec, final Point2D velocity, final Point2D acceleration) {
-        final float newX = (float) (velocity.getX() + acceleration.getX() * timeDeltaSec);
-        final float newY = (float) (velocity.getY() + acceleration.getY() * timeDeltaSec);
-        return new Point2D.Float(newX, newY);
+    static Point2D velocityAfter(final double timeDeltaSec, final Point2D velocity, final Point2D acceleration) {
+        final double newX = (velocity.getX() + acceleration.getX() * timeDeltaSec);
+        final double newY = (velocity.getY() + acceleration.getY() * timeDeltaSec);
+        return new Point2D(newX, newY);
     }
 
     static Point2D add(final Point2D vec1, final Point2D vec2) {
-        return new Point2D.Float((float) (vec1.getX() + vec2.getX()), (float) (vec1.getY() + vec2.getY()));
+        return new Point2D(vec1.getX() + vec2.getX(), vec1.getY() + vec2.getY());
     }
 
-    static Point2D thrustVector(final float rotation, final float thurstAcceleration) {
-        return new Point2D.Float(-thurstAcceleration * (float) Math.sin(rotation), thurstAcceleration * (float) Math.cos(rotation));
+    static Point2D thrustVector(final double rotation, final double thurstAcceleration) {
+        return new Point2D(-thurstAcceleration * Math.sin(rotation), thurstAcceleration * Math.cos(rotation));
     }
 
     public String toString() {
