@@ -8,9 +8,9 @@ public class World {
     private int numStars = 15;
 
     public World(double W, double H, RocketLanderView rocketLanderView) {
-        viewPort = new ViewPort(0,0, W, H);
+        viewPort = new ViewPort(0.,0., W, H, 5.);
         this.rocketLanderView = rocketLanderView;
-        this.background = new Background(viewPort, numStars);
+        this.background = new Background(numStars);
     }
 
 }

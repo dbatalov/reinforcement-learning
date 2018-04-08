@@ -1,46 +1,42 @@
 package com.batalov.RL.render;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 
 public class ViewPort {
-    public double x;
-    public double y;
+    double x_min;
+    double y_min;
+    double w;
+    double h;
+    double pix_per_m;
 
-    public double w_pix;
-    public double h_pix;
-
-    private final double PIXELS_PER_METER = 5.;
-    public BBox extents;
-    private BBox environment;
-
-    public ViewPort(double x, double y, double w, double h) {
-        this.x = x;
-        this.y = y;
-        this.w_pix = w;
-        this.h_pix = h;
-        extents = new BBox(
-                x - w / (2 * PIXELS_PER_METER), y - h / (2 * PIXELS_PER_METER),
-                x + w / (2 * PIXELS_PER_METER), y + h / (2 * PIXELS_PER_METER));
+    public ViewPort(double x_min_px, double y_min_px, double w_px, double h_px, double pix_per_m) {
+        this.pix_per_m = pix_per_m;
+        this.x_min = toMeters(x_min_px);
+        this.y_min = toMeters(y_min_px);
+        this.w = toMeters(w_px);
+        this.h = toMeters(h_px);
     }
 
+    public Rectangle2D bbox() {
+        return new Rectangle2D(x_min, y_min, w, h);
+    }
 
-    /**
-     * Move the viewport in world coordinates
-     */
     public void move(double x, double y) {
-        this.x += x;
-        this.y += y;
+        this.x_min += x;
+        this.y_min += y;
     }
 
-    public void render(GraphicsContext gc) {
-
+    public Point2D toPixelCoordinates(Point2D p) {
+        return new Point2D(toPixels(p.getX()-x_min), toPixels(p.getY()-y_min));
     }
 
-    public Point2D toPixels(Point2D p) {
-        return new Point2D(Math.round(p.getX() * PIXELS_PER_METER), Math.round(p.getY() * PIXELS_PER_METER));
-    }
     public double toPixels(double x) {
-        return Math.round(x*PIXELS_PER_METER);
+        return Math.round(x * pix_per_m);
+    }
+
+    public double toMeters(double x) {
+        return x / pix_per_m;
     }
 }

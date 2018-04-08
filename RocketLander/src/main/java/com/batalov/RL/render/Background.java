@@ -1,80 +1,56 @@
 package com.batalov.RL.render;
 
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class Background {
+    Logger log = LoggerFactory.getLogger(this.getClass());
     private int numStars;
-    Star[] stars;
-    private double innerRadius = 3;
-    private double outerRadius = 6;
-    private Random random;
-    private ViewPort viewPort;
-    private BBox sky;
+    private double radiusMin = 1;
+    private double radiusMax = 8;
 
-    private int spikes = 5;
-
-    public Background(ViewPort viewPort, int numStars) {
-        this.viewPort = viewPort;
-        stars = new Star[numStars];
-        random = new Random();
+    public Background(int numStars) {
         this.numStars = numStars;
-        BBox ext = viewPort.extents;
-
-        sky = new BBox(ext.topLeft.subtract(ext.width(), ext.height()),
-                ext.bottomRight.add(ext.width(), ext.height()));
-
-        IntStream.range(0, numStars).forEachOrdered(i -> {
-            stars[i] = new Star(
-                    sky.topLeft.getX() + sky.width() * random.nextDouble(),
-                    sky.topLeft.getY() + sky.height() * random.nextDouble(),
-                    innerRadius,
-                    outerRadius,
-                    spikes
-            );
-        });
     }
 
-    public void render(GraphicsContext gc) {
-        for(int i=0; i < numStars; ++i) {
-            Star star = stars[i];
-            StarGraphic starGraphic = new StarGraphic(
-                    viewPort.toPixels(star.x),
-                    viewPort.toPixels(star.y),
-                    spikes,
-                    viewPort.toPixels(innerRadius),
-                    viewPort.toPixels(outerRadius));
-            starGraphic.render(gc);
-        }
+    public void render(GraphicsContext gc, ViewPort vp) {
+        Rectangle2D vp_box = vp.bbox();
+        log.info("Background render {} {} {}", vp.x_min, vp.y_min, vp_box);
+        double w = vp_box.getWidth();
+        double h = vp_box.getHeight();
+        int x_i_min = (int) Math.floor(vp_box.getMinX() / w);
+        int x_i_max = (int) Math.floor(vp_box.getMaxX() / w);
 
-    }
+        int y_i_min = (int) Math.floor(vp_box.getMinY() / h);
+        int y_i_max = (int) Math.floor(vp_box.getMaxY() / h);
 
-    public void move(double x, double y) {
-        Arrays.stream(stars).forEach(star -> {
-            star.move(x, y);
-        });
-        ArrayList<Integer> clipped = new ArrayList<Integer>();
-        for (int i = 0; i < numStars; ++i) {
-            if (!stars[i].bbox().intersects(sky)) {
-                clipped.add(i);
+        ArrayList<Star> stars = new ArrayList<>(numStars*4);
+        for (int x_i = x_i_min; x_i <= x_i_max; ++x_i) {
+            for (int y_i = y_i_min; y_i <= y_i_max; ++y_i) {
+                long hash = y_i << 32 + x_i;
+                double x_min = x_i * w;
+                double y_min = y_i * h;
+                Random random = new Random(hash);
+                Random radiusRandom = new Random(hash);
+                //Random angleRandom = new Random(hash);
+                for (int i = 0; i < numStars; ++i) {
+                    //stars.add(new Point2D();
+                    double outerRadius = radiusMin + radiusRandom.nextDouble() * (radiusMax - radiusMin);
+                    double innerRadius = outerRadius / 2;
+                    Point2D pt = new Point2D(x_min + w * random.nextDouble(), y_min + w * random.nextDouble());
+                    stars.add(new Star(vp.toPixelCoordinates(pt), 5, innerRadius, outerRadius));
+                }
             }
         }
-        clipped.forEach(i -> {
-            while (true) {
-                Star star = new Star(
-                        sky.topLeft.getX() + sky.width() * random.nextDouble(),
-                        sky.topLeft.getY() + sky.height() * random.nextDouble(),
-                        innerRadius,
-                        outerRadius,
-                        5);
-                if (! star.bbox().intersects(viewPort.extents))
-                    break;
-            }
+        stars.forEach(star -> {
+            log.info("Star center {}", star.center);
+            star.render(gc);
         });
     }
 }

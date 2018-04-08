@@ -22,16 +22,18 @@ public class RocketLanderView extends Canvas {
     public static final int numStars = 40;
     private ViewPort viewPort;
     private Background background;
+    public static final double pix_per_m = 10.;
 
-    public RocketLanderView(final RocketLander rocketLander, double W, double H) {
-        super(W, H);
+    public RocketLanderView(final RocketLander rocketLander, double W_px, double H_px) {
+        super(W_px, H_px);
         this.rocketLander = rocketLander;
         ClassLoader cl = this.getClass().getClassLoader();
         URL p = cl.getResource("stars2.png");
         this.stars = new Image(cl.getResource("stars2.png").toString());
         this.ground = new Image(cl.getResource("surface.png").toString());
-        viewPort = new ViewPort(0, 0, W, H);
-        background = new Background(viewPort, numStars);
+        viewPort = new ViewPort(0., 0., W_px, H_px, pix_per_m);
+        background = new Background(numStars);
+        viewPort.move(-40,-30);
 
 
         //this.starGraphics = this.setScaleX(this.starGraphics, 2);
@@ -44,11 +46,11 @@ public class RocketLanderView extends Canvas {
 
     public void render() {
         GraphicsContext gc = this.getGraphicsContext2D();
-        gc.setFill(Color.WHITE);
+        gc.setFill(Color.BLACK);
         gc.fillRect(0,0, getWidth(), getHeight());
-        background.render(gc);
+        background.render(gc, viewPort);
         /*
-        StarGraphic starGraphic = new StarGraphic(100, 100, 5, 10, 30);
+        Star starGraphic = new Star(100, 100, 5, 10, 30);
         Point2D[] poly = starGraphic.polygon();
         double[] xs = new double[poly.length*2];
         IntStream.range(0, poly.length).forEachOrdered(i -> {
@@ -66,7 +68,7 @@ public class RocketLanderView extends Canvas {
     }
 
     public void move(double x, double y) {
-        background.move(x, y);
+        viewPort.move(x,y);
     }
 
 }
