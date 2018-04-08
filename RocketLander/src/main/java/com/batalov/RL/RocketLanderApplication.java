@@ -45,13 +45,13 @@ public class RocketLanderApplication extends Application {
         JavaFxObservable.eventsOf(scene, KeyEvent.KEY_PRESSED)
                 .filter((KeyEvent e) -> e.getCode().equals(KeyCode.RIGHT))
                 .subscribe((KeyEvent e) -> {
-                    rocketLanderView.move(5, 0);
+                    //rocketLanderView.move(5, 0);
                     rocketLander.setBurnRight(true);
                 });
         JavaFxObservable.eventsOf(scene, KeyEvent.KEY_PRESSED)
                 .filter((KeyEvent e) -> e.getCode().equals(KeyCode.LEFT))
                 .subscribe((KeyEvent e) -> {
-                    rocketLanderView.move(-5, 0);
+                    //rocketLanderView.move(-5, 0);
                     rocketLander.setBurnLeft(true);
                 });
 
@@ -70,7 +70,7 @@ public class RocketLanderApplication extends Application {
         JavaFxObservable.eventsOf(scene, KeyEvent.KEY_PRESSED)
                 .filter((KeyEvent e) -> e.getCode().equals(KeyCode.UP))
                 .subscribe((KeyEvent e) -> {
-                    rocketLanderView.move(0, -5);
+                    //rocketLanderView.move(0, -5);
                     rocketLander.setBurnLeft(true);
                     rocketLander.setBurnRight(true);
                 });
@@ -83,7 +83,7 @@ public class RocketLanderApplication extends Application {
         JavaFxObservable.eventsOf(scene, KeyEvent.KEY_PRESSED)
                 .filter((KeyEvent e) -> e.getCode().equals(KeyCode.DOWN))
                 .subscribe((KeyEvent e) -> {
-                    rocketLanderView.move(0, 5);
+                    //rocketLanderView.move(0, 5);
                 });
     }
 

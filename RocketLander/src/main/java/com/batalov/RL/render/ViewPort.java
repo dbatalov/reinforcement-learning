@@ -27,6 +27,10 @@ public class ViewPort {
         this.x_min += x;
         this.y_min += y;
     }
+    public void setCenter(double x, double y) {
+        x_min = x - w /2;
+        y_min = y - h /2;
+    }
 
     public Point2D toPixelCoordinates(Point2D p) {
         return new Point2D(toPixels(p.getX()-x_min), toPixels(p.getY()-y_min));
@@ -35,6 +39,8 @@ public class ViewPort {
     public double toPixels(double x) {
         return Math.round(x * pix_per_m);
     }
+    public double toPixelsX(double x) { return Math.round((x - x_min)*pix_per_m);}
+    public double toPixelsY(double y) { return Math.round((y - y_min)*pix_per_m);}
 
     public double toMeters(double x) {
         return x / pix_per_m;

@@ -3,6 +3,7 @@ package com.batalov.RL.render;
 
 import com.batalov.RL.RocketLander;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -51,15 +52,37 @@ public class RocketLanderView extends Canvas {
 
     }
 
+    public void renderGround() {
+        gc.save();
+        Rectangle2D bbox = viewPort.bbox();
+        double w = viewPort.toPixels(bbox.getWidth());
+        double h = viewPort.toPixels(1000);
+        double x = viewPort.toPixels(0);
+        double y = viewPort.toPixelsY(0) + lander.getHeight()/2;
+        gc.setFill(Color.GRAY);
+        gc.fillRect(x,y,w,h);
+        Point2D topLeft = new Point2D(bbox.getMinX(), bbox.getMinY());
+        Point2D botRight = new Point2D(bbox.getMaxX(),bbox.getMaxY());
+        Point2D topLeft_px = viewPort.toPixelCoordinates(topLeft);
+        Point2D botRight_px = viewPort.toPixelCoordinates(botRight);
+        if (botRight_px.getY() > 0) {
+            gc.strokeRect(botRight_px.getX(), viewPort.toPixelsY(0), topLeft_px.getX() - botRight_px.getX(), 10);
+        }
+        //gc.strokeRect();
+        gc.restore();
+    }
+
     public void renderLander() {
         gc.save();
         Affine tx = gc.getTransform();
+        viewPort.setCenter(rocketLander.getPosition().getX(), rocketLander.getPosition().getY());
         Point2D position_ = viewPort.toPixelCoordinates(rocketLander.getPosition());
         Point2D position = new Point2D(position_.getX(), position_.getY());
-        log.info("position {}", position);
+        //log.info("position {}", position);
         tx.appendRotation(Math.toDegrees(-rocketLander.getRotation()), position);
         tx.appendTranslation(-this.lander.getWidth()/2, -this.lander.getHeight()/2);
         gc.setTransform(tx);
+        //gc.drawImage(this.lander, position.getX(), position.getY());
         if (rocketLander.crashed())
             gc.drawImage(this.landerCrashed, position.getX(), position.getY());
         else
@@ -91,6 +114,7 @@ public class RocketLanderView extends Canvas {
         gc.fillRect(0, 0, getWidth(), getHeight());
         renderLander();
         background.render(gc, viewPort);
+        renderGround();
         /*
         Star starGraphic = new Star(100, 100, 5, 10, 30);
         Point2D[] poly = starGraphic.polygon();
@@ -107,6 +131,7 @@ public class RocketLanderView extends Canvas {
         */
         //starGraphic.render(gc);
     }
+
 
     public void move(double x, double y) {
         viewPort.move(x, y);

@@ -16,10 +16,10 @@ public class RocketLander {
     private static final Logger log = LoggerFactory.getLogger(RocketLander.class.getName());
 
     //	private static final Point2D GRAVITY = new Point2D.Float(0, -9.81); // Earth, m/s^2
-    private static final Point2D GRAVITY = new Point2D(0, -1.625); // Moon, m/s^2
+    private static final Point2D GRAVITY = new Point2D(0, 1.625); // Moon, m/s^2
     private static final Point2D LANDED = new Point2D(0, 0); // when landed, the gravity is compensated by ground resistance
 
-    private static final double ENGINE_ACCELERATION = 10.; // m/s^2, per single engine
+    private static final double ENGINE_ACCELERATION = -10.; // m/s^2, per single engine
 
     private static final double ROTATION_PER_SEC = Math.toRadians(10);
 
@@ -86,8 +86,8 @@ public class RocketLander {
      * @param timeDeltaSec number of seconds (or fraction of a second) to advance.
      */
     public void tick(final double timeDeltaSec) {
-        log.info("RL pos: {}", this.position);
-        log.info(this.toString());
+        //log.info("RL pos: {}", this.position);
+        //log.info(this.toString());
         if (this.crashed()) { // has side effects
             return; // state does not change after a crash
         }
@@ -108,7 +108,7 @@ public class RocketLander {
         this.velocity = velocityAfter(timeDeltaSec, this.velocity, acceleration);
         this.rotation += ((burnLeft ? -1 : 0) + (burnRight ? 1 : 0)) * ROTATION_PER_SEC * timeDeltaSec;
         this.checkLanded(); // has side effects
-        log.info("*RL pos: {}", this.position);
+        //log.info("*RL pos: {}", this.position);
     }
 
     public boolean isOnGround() {
@@ -116,9 +116,9 @@ public class RocketLander {
     }
 
     public boolean checkLanded() {
-        if (!this.crashed() && this.position.getY() <= 0.) {
+        if (!this.crashed() && this.position.getY() >= 0.) {
             // straighten position and stop
-            //this.reset(this.position.getX());
+            this.reset(this.position.getX());
             return true;
         } else {
             return false;
@@ -128,15 +128,15 @@ public class RocketLander {
     public boolean crashed() {
         if (this.crashed) {
             return true;
-        } else if (this.position.getY() < 0 &&
-                (Math.abs(this.velocity.getX()) > 1.0f
-                        || this.velocity.getY() < -3.0f
+        } else if (this.position.getY() > 0.5 &&
+                (Math.abs(this.velocity.getX()) > 1.
+                        || this.velocity.getY() < 3.
                         || Math.abs(this.rotation) > Math.toRadians(10))) {
 
             this.crashed = true;
             // crash should not result in going into ground too deep
-            if (this.position.getY() < -1f) {
-                this.position = new Point2D(this.position.getX(), -1); // 1 meter deep
+            if (this.position.getY() > 1.) {
+                this.position = new Point2D(this.position.getX(), 1); // 1 meter deep
             }
             // stop the rocket
             this.velocity = new Point2D(0, 0);
@@ -165,7 +165,7 @@ public class RocketLander {
     }
 
     static Point2D thrustVector(final double rotation, final double thurstAcceleration) {
-        return new Point2D(-thurstAcceleration * Math.sin(rotation), thurstAcceleration * Math.cos(rotation));
+        return new Point2D(thurstAcceleration * Math.sin(rotation), thurstAcceleration * Math.cos(rotation));
     }
 
     public String toString() {
