@@ -46,17 +46,39 @@ public class RocketLanderApplication extends Application {
                 .filter((KeyEvent e) -> e.getCode().equals(KeyCode.RIGHT))
                 .subscribe((KeyEvent e) -> {
                     rocketLanderView.move(5, 0);
+                    rocketLander.setBurnRight(true);
                 });
         JavaFxObservable.eventsOf(scene, KeyEvent.KEY_PRESSED)
                 .filter((KeyEvent e) -> e.getCode().equals(KeyCode.LEFT))
                 .subscribe((KeyEvent e) -> {
                     rocketLanderView.move(-5, 0);
+                    rocketLander.setBurnLeft(true);
+                });
+
+
+        JavaFxObservable.eventsOf(scene, KeyEvent.KEY_RELEASED)
+                .filter((KeyEvent e) -> e.getCode().equals(KeyCode.RIGHT))
+                .subscribe((KeyEvent e) -> {
+                    rocketLander.setBurnRight(false);
+                });
+        JavaFxObservable.eventsOf(scene, KeyEvent.KEY_RELEASED)
+                .filter((KeyEvent e) -> e.getCode().equals(KeyCode.LEFT))
+                .subscribe((KeyEvent e) -> {
+                    rocketLander.setBurnLeft(false);
                 });
 
         JavaFxObservable.eventsOf(scene, KeyEvent.KEY_PRESSED)
                 .filter((KeyEvent e) -> e.getCode().equals(KeyCode.UP))
                 .subscribe((KeyEvent e) -> {
                     rocketLanderView.move(0, -5);
+                    rocketLander.setBurnLeft(true);
+                    rocketLander.setBurnRight(true);
+                });
+        JavaFxObservable.eventsOf(scene, KeyEvent.KEY_RELEASED)
+                .filter((KeyEvent e) -> e.getCode().equals(KeyCode.UP))
+                .subscribe((KeyEvent e) -> {
+                    rocketLander.setBurnLeft(false);
+                    rocketLander.setBurnRight(false);
                 });
         JavaFxObservable.eventsOf(scene, KeyEvent.KEY_PRESSED)
                 .filter((KeyEvent e) -> e.getCode().equals(KeyCode.DOWN))
@@ -75,10 +97,22 @@ public class RocketLanderApplication extends Application {
         stage.setTitle("Rocket Lander!");
         setControls();
         stage.show();
+        final long tick_ns = 20_000_000L;
         new AnimationTimer() {
-            public void handle(long now) {
+            long prevTick_ns = System.nanoTime();
+
+            public void handle(long now_ns) {
                 //System.out.println("timer");
+
                 rocketLanderView.render();
+                long delta_ns = now_ns - prevTick_ns;
+                //log.info("delta_ns: {}", delta_ns);
+                if (delta_ns >= tick_ns) {
+                    double tick_s = (double) delta_ns / 1_000_000_000.;
+                    //log.info("Tick {}", tick_s);
+                    rocketLander.tick(tick_s);
+                    prevTick_ns = now_ns;
+                }
             }
         }.start();
     }

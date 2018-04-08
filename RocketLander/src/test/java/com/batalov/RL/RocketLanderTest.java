@@ -1,7 +1,6 @@
 package com.batalov.RL;
 
-import java.awt.geom.Point2D;
-
+import javafx.geometry.Point2D;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -21,7 +21,7 @@ public class Background {
 
     public void render(GraphicsContext gc, ViewPort vp) {
         Rectangle2D vp_box = vp.bbox();
-        log.info("Background render {} {} {}", vp.x_min, vp.y_min, vp_box);
+        //log.info("Background render {} {} {}", vp.x_min, vp.y_min, vp_box);
         double w = vp_box.getWidth();
         double h = vp_box.getHeight();
         int x_i_min = (int) Math.floor(vp_box.getMinX() / w);
