@@ -1,10 +1,10 @@
 package com.batalov.RL;
 
-
-import com.batalov.RL.RNG;
+import com.typesafe.config.Config;
 import javafx.geometry.Point2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.typesafe.config.ConfigFactory;
 
 /**
  * This Rocket Lander world provides 2D physics simulation of a rocket with 2 engines flying in the gravity force of a celestial body. The objective is to land the rocket ship safely.
@@ -14,14 +14,16 @@ import org.slf4j.LoggerFactory;
 public class RocketLander {
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(RocketLander.class.getName());
+    private static Config conf = ConfigFactory.load().getConfig("rocketlander");
+
 
     //	private static final Point2D GRAVITY = new Point2D.Float(0, -9.81); // Earth, m/s^2
-    private static final Point2D GRAVITY = new Point2D(0, 1.625); // Moon, m/s^2
+    private static final Point2D GRAVITY = new Point2D(0, -conf.getDouble("gravity")); // Moon, m/s^2
     private static final Point2D LANDED = new Point2D(0, 0); // when landed, the gravity is compensated by ground resistance
 
-    private static final double ENGINE_ACCELERATION = -10.; // m/s^2, per single engine
+    private static final double ENGINE_ACCELERATION = -conf.getDouble("engineAcceleration"); // m/s^2, per single engine
 
-    private static final double ROTATION_PER_SEC = Math.toRadians(10);
+    private static final double ROTATION_PER_SEC = Math.toRadians(conf.getDouble("rotation_deg_s"));
 
     private Point2D position = new Point2D(0, 0); // meters along X and Y from "origin"
     private Point2D velocity = new Point2D(0, 0); // vector, m/s
@@ -38,15 +40,19 @@ public class RocketLander {
 	*/
 
     public RocketLander() {
-        this.reset(this.position.getX());
+        this.reset();
     }
 
-    private void reset(final double x) {
-        this.position = new Point2D(x, 0);
+    public void reset() {
+       reset(0,0);
+    }
+    public void reset(final double x, final double y) {
+        this.position = new Point2D(x, y);
         this.velocity = new Point2D(0, 0);
         this.rotation = 0;
         this.setBurnLeft(false);
         this.setBurnRight(false);
+        this.crashed = false;
     }
 
     public Point2D getPosition() {
@@ -87,7 +93,7 @@ public class RocketLander {
      */
     public void tick(final double timeDeltaSec) {
         //log.info("RL pos: {}", this.position);
-        //log.info(this.toString());
+        log.info(this.toString());
         if (this.crashed()) { // has side effects
             return; // state does not change after a crash
         }
@@ -118,7 +124,7 @@ public class RocketLander {
     public boolean checkLanded() {
         if (!this.crashed() && this.position.getY() >= 0.) {
             // straighten position and stop
-            this.reset(this.position.getX());
+            this.reset();
             return true;
         } else {
             return false;
@@ -128,18 +134,19 @@ public class RocketLander {
     public boolean crashed() {
         if (this.crashed) {
             return true;
-        } else if (this.position.getY() > 0.5 &&
+        } else if (this.position.getY() >= 0. &&
                 (Math.abs(this.velocity.getX()) > 1.
-                        || this.velocity.getY() < 3.
+                        || this.velocity.getY() > 3.
                         || Math.abs(this.rotation) > Math.toRadians(10))) {
 
             this.crashed = true;
             // crash should not result in going into ground too deep
             if (this.position.getY() > 1.) {
-                this.position = new Point2D(this.position.getX(), 1); // 1 meter deep
+                this.position = new Point2D(this.position.getX(), 1);
             }
             // stop the rocket
             this.velocity = new Point2D(0, 0);
+            this.rotation = 0;
             // turn off engines
             this.setBurnLeft(false);
             this.setBurnRight(false);
@@ -169,7 +176,7 @@ public class RocketLander {
     }
 
     public String toString() {
-        return String.format("< %s -- %s >, p = [%f, %f], v = [%f, %f], r = %f", (this.getBurnLeft() ? "*" : "."), (this.getBurnRight() ? "*" : "."), this.position.getX(), this.position.getY(), this.velocity.getX(), this.velocity.getY(), this.rotation);
+        return String.format("< %s - %s >, p = [%.2f, %.2f], v = [%.2f, %.2f], r = %.1f", (this.getBurnLeft() ? "*" : "."), (this.getBurnRight() ? "*" : "."), this.position.getX(), this.position.getY(), this.velocity.getX(), this.velocity.getY(), this.rotation);
     }
 
     /**

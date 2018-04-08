@@ -85,6 +85,11 @@ public class RocketLanderApplication extends Application {
                 .subscribe((KeyEvent e) -> {
                     //rocketLanderView.move(0, 5);
                 });
+            JavaFxObservable.eventsOf(scene, KeyEvent.KEY_PRESSED)
+                .filter((KeyEvent e) -> e.getCode().equals(KeyCode.R))
+                .subscribe((KeyEvent e) -> {
+                    rocketLander.reset();
+                });
     }
 
 
