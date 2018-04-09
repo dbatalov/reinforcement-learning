@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import java.net.URL;
 
 /**
  * Rendering of the Rocket Lander in a JPanel. Left arrow on the keyboard fires the left engine and right arrow - the right one.
@@ -36,9 +35,12 @@ public class RocketLanderView extends JPanel {
 	public RocketLanderView(final RocketLander lander) {
 		this.lander = lander;
 		try {
-			ClassLoader cl = this.getClass().getClassLoader();
-			this.stars = ImageIO.read(cl.getResource("stars2.png"));
-			this.ground = ImageIO.read(cl.getResource("surface.png"));
+			/*
+			this.stars = ImageIO.read(new File("./resources/stars2.png"));
+			this.ground = ImageIO.read(new File("./resources/surface.png"));
+			*/
+			this.stars = ImageIO.read(RocketLanderView.class.getResource("/stars2.png"));
+			this.ground = ImageIO.read(RocketLanderView.class.getResource("/surface.png"));
 			this.stars = this.scaleDownBy(this.stars, 2);
 			this.ground = this.scaleDownBy(this.ground, 2);
 		} catch (final IOException ioe) {
@@ -167,7 +169,7 @@ public class RocketLanderView extends JPanel {
 		g.setColor(Color.BLUE);
 		final float bodyRadiusMeters = 10;
 		final int bodyRadius = metersToPixels(bodyRadiusMeters); // pixels
-		yRocket -= bodyRadius;
+		yRocket -= bodyRadius; 
 		g.fillArc(xRocket-bodyRadius, yRocket-bodyRadius, bodyRadius*2, bodyRadius*2, (int)Math.round(Math.toDegrees(this.lander.getRotation()+Math.PI)), 180);
 		g.setColor(new Color(0xBCC6CC));
 		g.fillArc(xRocket-bodyRadius, yRocket-bodyRadius, bodyRadius*2, bodyRadius*2, (int)Math.round(Math.toDegrees(this.lander.getRotation())), 180);
@@ -185,6 +187,27 @@ public class RocketLanderView extends JPanel {
 		if (this.lander.getBurnRight()) {
 			g.fillArc(xRocket+xProjection-bodyRadius, yRocket-yProjection-bodyRadius, bodyRadius*2, bodyRadius*2, (int)Math.round(Math.toDegrees(this.lander.getRotation())+260), 20);
 		}
+	}
+
+	public void updateView() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				RocketLanderView.this.repaint();
+			}
+		});
+	}
+
+	public void updateBurnBoth(final boolean burnLeft, final boolean burnRight) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				RocketLanderView.this.lander.setBurnLeft(burnLeft);
+				RocketLanderView.this.lander.setBurnRight(burnRight);
+				lander.tick(0.1f);
+				RocketLanderView.this.repaint();
+			}
+		});
 	}
 
 	public void updateBurnLeft(final boolean burnLeft) {
