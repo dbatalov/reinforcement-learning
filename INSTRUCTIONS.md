@@ -229,14 +229,14 @@ When engine firing causes the rocket to go up, that's clearly the wrong behavior
 
 Add a new reinforcement function `reinforcement3` that encodes this idea and compare results with the function in previous task.
 
-### TASK 4. Change the goal - add fuel consumption
+### TASK 5. Change the goal - add fuel consumption
 
 Depending on how you implemented the above function you are likely seeing faster convergence, though, now the engines might be burning much more frequently than necessary and it takes longer to land.
 Next idea would be to model real fuel consumption of the rocket. This is a much more involved task because it requires changes to `RocketLander` class - maintaining a new state variable of fuel left.
 Additionally, the Q-Learning algorithm needs to observe the amount of fuel left as another sensory value, which you need to provide to a `QLearningOrchestrator` as an explicit input with the corresponding `InputDescriptor`.
 When the rocket runs out of fuel, engines cannot fire anymore and the rocket falls to the ground. Like in the previous tasks, you need to consider what kind of reinforcement function to use.
 
-### TASK 5. BONUS EXERCISE - rotating rocket
+### TASK 6. BONUS EXERCISE - rotating rocket
 
 ##### WARNING: This is a difficult task and you are likely to run out of time! So this could be a good take home exercise.
 
