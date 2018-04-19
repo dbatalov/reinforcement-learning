@@ -6,12 +6,12 @@ This file contains all instructions necessary to
 SETUP
 -----
 
-###0. Assumptions
+### 0. Assumptions
 
 * you are running the following on a machine (e.g. laptop) with **GUI capabilities** and not on a text terminal!
 * running on a headless server (e.g. AWS EC2 Linux machine) **is not recommended**, even if you setup remote GUI such as XWindows.
 
-###1. Make sure Java SE Development Kit 8 is installed (`javac` compiler required)
+### 1. Make sure Java SE Development Kit 8 is installed (`javac` compiler required)
 
 
     % java -version
@@ -25,7 +25,7 @@ SETUP
 
 Go to [installation page](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) otherwise.
 
-###2. Make sure Maven is installed
+### 2. Make sure Maven is installed
 
 Maven is used to build the code and run specific Java classes.
 
@@ -41,7 +41,7 @@ Make sure `JAVA_HOME` environment variable is set correctly.
     OS name: "linux", version: "4.9.81-35.56.amzn1.x86_64", arch: "amd64", family: "unix"
 
     
- ###3. Make sure Git is installed
+ ### 3. Make sure Git is installed
  
     
  from the [Git install page](https://git-scm.com/downloads).
@@ -50,7 +50,7 @@ Make sure `JAVA_HOME` environment variable is set correctly.
     git version 2.13.6
    
  
- ###4. Clone the git repository with the Reinforcement Learning codebase used in this lab
+ ### 4. Clone the git repository with the Reinforcement Learning codebase used in this lab
  
  Switch to the directory where you want the repository to be cloned to.
  The following command will create `reinforcement-learning` subdirectory with the codebase.
@@ -63,7 +63,7 @@ Make sure `JAVA_HOME` environment variable is set correctly.
     total 4
     drwxrwxr-x 6 ec2-user ec2-user 4096 Apr 18 18:08 reinforcement-learning
 
-###5. Build the code using Maven
+### 5. Build the code using Maven
 
     % cd reinforcement-learning
     % mvn package
@@ -71,9 +71,9 @@ Make sure `JAVA_HOME` environment variable is set correctly.
 This command will result in lengthy output that should end with a successful build.
 Now you are ready to run the Rocket Lander example.
 
-###6. Running RocketLander GUI
+### 6. Running RocketLander GUI
 
-####6.1 Start the simulator
+#### 6.1 Start the simulator
 
 First, put the compiled jar file into local maven repository 
 
@@ -92,7 +92,7 @@ Release the arrow button to stop the corresponding engine from firing.
 
 ![Simulator Screenshot](images/simulator-screenshot.png)
 
-####6.2 Land the RocketLander
+#### 6.2 Land the RocketLander
 
 Once the RocketLander takes off, try landing it.
 To land safely the rocket must not
@@ -110,7 +110,7 @@ If the rocket **crashes**, you must restart the simulator.
 Lab Work
 ========
 
-###TASK 1. Observe Q-Learning landing the Rocket
+### TASK 1. Observe Q-Learning landing the Rocket
 
 The goal of this section is to configure the experiment with the right parameters, observe the training of Q-Learning model and it's convergence to a safe landing policy.
 
@@ -121,47 +121,47 @@ Using your favorite editor, open the file `RocketLanderExperiment` class:
 In this experiment, the rocket is only able to move up and down without rotation.
 This is achieved by engines always firing together.
 
-####1.1 Set the starting height of the rocket to be 50 meters:
+#### 1.1 Set the starting height of the rocket to be 50 meters:
 
-                // ===== STEP 5. initialize real environment
-                // define the state of the environment at the beginning of each learning session
-                final RocketLander startingLander = new RocketLander();
-                startingLander.getPosition().setLocation(0, 50.0);
+    // ===== STEP 5. initialize real environment
+    // define the state of the environment at the beginning of each learning session
+    final RocketLander startingLander = new RocketLander();
+    startingLander.getPosition().setLocation(0, 50.0);
 
-####1.2 Set the *ceiling* to be 60 meters:
+#### 1.2 Set the *ceiling* to be 60 meters:
 
-        private static final float CEILING_HEIGHT = 60.0f;
-        private static boolean isTooHigh(final RocketLander lander) {
-                return lander.getPosition().getY() > CEILING_HEIGHT;
-        }
+    private static final float CEILING_HEIGHT = 60.0f;
+    private static boolean isTooHigh(final RocketLander lander) {
+        return lander.getPosition().getY() > CEILING_HEIGHT;
+    }
 
 If the rocket flies above the virtual ceiling, the episode ends with failure and is equivalent to crashing.
 
-####1.3 Adjust the range of valid rocket heights to be in the range of `[-1 .. 99]` meters:
+#### 1.3 Adjust the range of valid rocket heights to be in the range of `[-1 .. 99]` meters:
 
-                inputDescriptors.put(DESC_NAME_HEIGHT,  FixedPointInputDescriptor.newWith(-1.0f, 99.0f, PRECISION_HEIGHT));
+    inputDescriptors.put(DESC_NAME_HEIGHT,  FixedPointInputDescriptor.newWith(-1.0f, 99.0f, PRECISION_HEIGHT));
                 
             
 We don't want to use 60 meters, because the rocket might be well above 60 at the end of a simulation step, before the ceiling breach is detected. 99 provides sufficient room and restricts the height to only 101 possible values, since the `PRECISION_HEIGHT` is set to 0 digits after decimal point.
 
-####1.4 Set the learning rate and the discount factor both to 1
+#### 1.4 Set the learning rate and the discount factor both to 1
 
-                // step 4. configure the model
-                qlo.setAlgorithmLearningRate(modelId, 1);
-                qlo.setAlgorithmDiscountFactor(modelId, 1);
+    // step 4. configure the model
+    qlo.setAlgorithmLearningRate(modelId, 1);
+    qlo.setAlgorithmDiscountFactor(modelId, 1);
 
-####1.5 Check to make sure `reinforcement1` function is being used:
+#### 1.5 Check to make sure `reinforcement1` function is being used:
 
-                                      reinforcement = reinforcement1(oldState, actionName, lander);
+    reinforcement = reinforcement1(oldState, actionName, lander);
 
-####1.6 Examine the reinforcement function definition to understand how the landing goal is defined:
+#### 1.6 Examine the reinforcement function definition to understand how the landing goal is defined:
 
-        // penalize crash (or out of bounds) heavily, otherwise penalize for time wasted
-        private static Double reinforcement1(final RocketLander oldState, final String actionName, final RocketLander lander) {
-                return lander.crashed() || isTooHigh(lander) ? -1000.0 : -1.0;
-        }
+    // penalize crash (or out of bounds) heavily, otherwise penalize for time wasted
+    private static Double reinforcement1(final RocketLander oldState, final String actionName, final RocketLander lander) {
+        return lander.crashed() || isTooHigh(lander) ? -1000.0 : -1.0;
+    }
 
-####1.7 Finally, run the experiment
+#### 1.7 Finally, run the experiment
 
     % cd RocketLander
     % mvn exec:java -Dexec.mainClass=com.batalov.RL.RocketLanderExperiment
@@ -198,7 +198,7 @@ It may take many episodes before the model converges (or the model may never con
 So you don't wait for each episode in real-time, click on the simulator window anywhere to speed up the simulation. In this mode, only the results of the episodes are printed.
 Keep clicking to toggle between real-time and fast simulation.
 
-###TASK 2. Play with parameters
+### TASK 2. Play with parameters
 
 Make modifications and re-run the experiment taking note of the effect on learning.
 Here are some ideas to try:
@@ -207,7 +207,7 @@ Here are some ideas to try:
 * change gravity to that of the Moon, see `GRAVITY` constant inside `RocketLander` class
 * play with learning rate and discount factor, both must be in `[0..1]` range
 
-###TASK 3. Change the goal - penalize engine burn
+### TASK 3. Change the goal - penalize engine burn
 
 The "goal" of the RL agent is specified in the form of the reinforcement function.
 It's an indirect way of supplying the goal since we are not specifying exactly what needs to be done.
@@ -223,24 +223,23 @@ So one simple idea is to penalize the agent for burning the engines, rather than
 Add a new reinforcement function `reinforcement2` that encodes this idea and compare results with the original function.
 The agent should now learn to land the rocket in roughly half the time, though the optimal behavior may now take a few more time steps, since we are optimizing for less engine firing and not less time, though these are somewhat related.
 
-###TASK 4. Change the goal - penalize engine burn when rocket goes up
+### TASK 4. Change the goal - penalize engine burn when rocket goes up
 
 When engine firing causes the rocket to go up, that's clearly the wrong behavior, but when the engines fire to slow the rocket's fall, this may actually be the right behavior depending on how close the rocket is to the ground.
 
 Add a new reinforcement function `reinforcement3` that encodes this idea and compare results with the function in previous task.
 
-###TASK 4. Change the goal - add fuel consumption
+### TASK 4. Change the goal - add fuel consumption
 
 Depending on how you implemented the above function you are likely seeing faster convergence, though, now the engines might be burning much more frequently than necessary and it takes longer to land.
 Next idea would be to model real fuel consumption of the rocket. This is a much more involved task because it requires changes to `RocketLander` class - maintaining a new state variable of fuel left.
 Additionally, the Q-Learning algorithm needs to observe the amount of fuel left as another sensory value, which you need to provide to a `QLearningOrchestrator` as an explicit input with the corresponding `InputDescriptor`.
 When the rocket runs out of fuel, engines cannot fire anymore and the rocket falls to the ground. Like in the previous tasks, you need to consider what kind of reinforcement function to use.
 
-###TASK 5. BONUS EXERCISE - rotating rocket
+### TASK 5. BONUS EXERCISE - rotating rocket
 
 ##### WARNING: This is a difficult task and you are likely to run out of time! So this could be a good take home exercise.
 
 For this task we want to allow the rocket to move freely not just along the vertical axis. This means allowing the two engines to act independently. To make sure the rocket does not fly too far away, you may want to establish virtual "walls" to the left and to the right of the rocket, in addition to the virtual "ceiling".
 
 Bonus points if you can make the rocket land onto the landing pad and not just anywhere on the ground.    
- 
