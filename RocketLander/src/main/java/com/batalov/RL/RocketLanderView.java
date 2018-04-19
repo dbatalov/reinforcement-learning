@@ -35,10 +35,6 @@ public class RocketLanderView extends JPanel {
 	public RocketLanderView(final RocketLander lander) {
 		this.lander = lander;
 		try {
-			/*
-			this.stars = ImageIO.read(new File("./resources/stars2.png"));
-			this.ground = ImageIO.read(new File("./resources/surface.png"));
-			*/
 			this.stars = ImageIO.read(RocketLanderView.class.getResource("/stars2.png"));
 			this.ground = ImageIO.read(RocketLanderView.class.getResource("/surface.png"));
 			this.stars = this.scaleDownBy(this.stars, 2);
@@ -154,7 +150,9 @@ public class RocketLanderView extends JPanel {
 			// draw landing zone
 			final int xZoneRadius = 200;
 			final int yZoneRadius = this.getGroundHeight();
-			g.setColor(Color.WHITE);
+			final int alpha = 127; // 50% transparent
+			final Color transparentWhite = new Color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), alpha);
+			g.setColor(transparentWhite);
 			g.fillArc(xOrigin-xZoneRadius, yGround-yZoneRadius, xZoneRadius*2, yZoneRadius*2, 180, 180);
 			// draw origin on ground
 			g.setColor(Color.BLACK);

@@ -1,21 +1,9 @@
 package com.batalov.RL;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import com.batalov.RL.QLearningOrchestrator.*;
 
-import com.batalov.RL.QLearningOrchestrator.EnvironmentConfiguration;
-import com.batalov.RL.QLearningOrchestrator.FixedPointInputDescriptor;
-import com.batalov.RL.QLearningOrchestrator.Input;
-import com.batalov.RL.QLearningOrchestrator.BooleanInput;
-import com.batalov.RL.QLearningOrchestrator.BooleanInputDescriptor;
-import com.batalov.RL.QLearningOrchestrator.InputDescriptor;
-import com.batalov.RL.QLearningOrchestrator.FixedPointInput;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class RocketLanderExperiment {
 
@@ -45,19 +33,6 @@ public class RocketLanderExperiment {
 		return lander.crashed() || isTooHigh(lander) ? -1000.0 : -1.0;
 	}
 
-	// penalize crash (or too high) heavily, otherwise penalize for time wasted when engines are burning
-	private static Double reinforcement2(final RocketLander oldState, final String actionName, final RocketLander lander) {
-		if (lander.crashed() || isTooHigh(lander)) {
-			return -1000.0;
-		}
-		else if (actionName.equals("burn")) {
-			return  -1.0;
-		}
-		else {
-			return 0.0;
-		}
-	}
-	
 	private static String resultAsString(final RocketLander lander) {
 		if (lander.crashed()) {
 			return "CRASH";
@@ -75,12 +50,11 @@ public class RocketLanderExperiment {
 	private static final String DESC_NAME_ENGINES 	= "engines";
 	
 	private static final int PRECISION_HEIGHT 	= 0;
-	private static final int PRECISION_VELOCITY 	= 0;
+	private static final int PRECISION_VELOCITY = 0;
 	
 	private static Map<String, InputDescriptor> defineInputDescriptors() {
 		final Map<String, InputDescriptor> inputDescriptors = new HashMap<String, InputDescriptor>();
-		// TODO Is the precision actually respected, height seems to be printed with full precision.
-		inputDescriptors.put(DESC_NAME_HEIGHT,	FixedPointInputDescriptor.newWith(-1.0f, 99.0f, PRECISION_HEIGHT));
+		inputDescriptors.put(DESC_NAME_HEIGHT,	    FixedPointInputDescriptor.newWith(-1.0f, 99.0f, PRECISION_HEIGHT));
 		inputDescriptors.put(DESC_NAME_VELOCITY,	FixedPointInputDescriptor.newWith(-99f, +99f, PRECISION_VELOCITY));
 		inputDescriptors.put(DESC_NAME_ENGINES, 	BooleanInputDescriptor.INSTANCE);
 		return inputDescriptors;
@@ -93,6 +67,17 @@ public class RocketLanderExperiment {
 		result.put(DESC_NAME_ENGINES,  new BooleanInput(getBurnEngines(lander)));
 		return result;
 	}
+
+	public static void sleep(final long millis) {
+	    try {
+	        Thread.sleep(millis);
+        }
+        catch (final InterruptedException e) {
+	        LOG.warning("Unexpected Exception" + e);
+        }
+    }
+
+    private static final long TICK_DURATION_MILLIS = 100;
 
 	public static void main(String[] args) {
 		// step 1. create experiment orchestrator
@@ -114,7 +99,7 @@ public class RocketLanderExperiment {
 		final String modelId = qlo.createModel(envConfigId);
 
 		// step 4. configure the model
-		qlo.setAlgorithmLearningRate(modelId, 0.9);
+		qlo.setAlgorithmLearningRate(modelId, 1);
 		qlo.setAlgorithmDiscountFactor(modelId, 1);
 		LOG.info("steps 3,4. created & configured the model");
 
@@ -125,15 +110,8 @@ public class RocketLanderExperiment {
 		// now create the actual environment
 		final RocketLander lander = new RocketLander();
 		// create the lander UI
-
 		final RocketLanderFrame f = new RocketLanderFrame(lander);
-		try {
-			Thread.sleep(5000);
-		}
-		catch (final InterruptedException e) {
-			
-		}
-
+		sleep(5000); // wait for the UI to initialize, TODO this is a hack - add proper waiting
 		// ===== END OF STEP 5
 
 		// ===== STEP 6. Build a list of actions
@@ -145,21 +123,23 @@ public class RocketLanderExperiment {
 
 		// ===== STEP 7. start the interaction/learning loop
 		int xSession = 0;
-//		final List<Long> runTimes = new LinkedList<Long>();
-//		final List<Integer> stepsSinceLastChange = new LinkedList<Integer>();
-//		while (!didConverge(runTimes, stepsSinceLastChange)) {
+/* commented out mechanism for stopping training after apparent convergence
+		final List<Long> runTimes = new LinkedList<Long>();
+		final List<Integer> stepsSinceLastChange = new LinkedList<Integer>();
+		while (!didConverge(runTimes, stepsSinceLastChange)) {
+*/
 		while (true) {
 			xSession++;
 			lander.setFrom(startingLander); // reinitialize from starting state
 			Map<String, Input> inputs = getStateFrom(lander);
 			final String sessionId = qlo.startSession(modelId, inputs, actionNames);
-/*
+
 //			lander.newTimeOfLastUpdate();
 			// TODO add real-time vs simulated time replicable mechanism
 			if (f.getRocketLanderView().isRealTime()) {
-				FlappyBird.sleepTimeStep();
+				sleep(TICK_DURATION_MILLIS);
 			}
-*/
+
 			f.getRocketLanderView().updateView();
 
 // 			System.out.println("Table at start of episode:\n" + qlo.getModel(modelId).getAlgorithm().getTable().toString());
@@ -173,50 +153,35 @@ public class RocketLanderExperiment {
 //				System.out.println("burn action = " + burn);
 				lander.setBurnLeft(burn);
 				lander.setBurnRight(burn);
-				final long tickDuration = 100;
-				lander.tick(tickDuration/1000f);
+				lander.tick(TICK_DURATION_MILLIS/1000f);
 				f.getRocketLanderView().updateView();
-				//f.getRocketLanderView().updateBurnBoth(burn, burn);
-//				state.applyAction(action, f.getFlappyBirdView().isRealTime());
 
-//				reinforcement = reinforcement1(oldState, actionName, lander);
-				reinforcement = reinforcement2(oldState, actionName, lander);
+				reinforcement = reinforcement1(oldState, actionName, lander);
 				inputs = getStateFrom(lander);
 				final long time = qlo.newState(sessionId, inputs, actionNames, reinforcement);
 				if (f.getRocketLanderView().isRealTime()) {
-					System.out.println("e = " + xSession + ", t = " + time);
-					System.out.println("s = " + oldState);
+					System.out.println("episode = " + xSession + ", time = " + time);
+					System.out.println("s  : " + oldState);
 					System.out.println("a = " + actionName + ", r = " + reinforcement);
-					System.out.println("s' = " + lander);
+					System.out.println("s' : " + lander);
 		 			System.out.println();
-					try {
-						Thread.sleep(tickDuration);
-					}
-					catch (final InterruptedException e) {
-						
-					}
+		 			sleep(TICK_DURATION_MILLIS);
 				}
 
 //	 			System.out.println(qlo.getModel(modelId).getAlgorithm().getTable().toString());
-/*
-				if (f.getFlappyBirdView().isRealTime()) {
-					FlappyBird.sleepTimeStep();
-				}
-*/
 			}
 			
-//			start.setTargetHeight(state.getTargetHeight());
 			final long finalTime = qlo.getSession(sessionId).getTicks();
 			final int sslc = qlo.getSession(sessionId).getStepsSinceLastChange();
-			System.out.println("session = " + xSession + ", time = " + finalTime + ", sslc = " + sslc + ", result = " + resultAsString(lander));
+			System.out.println("episode = " + xSession + ", time = " + finalTime + ", sslc = " + sslc + ", result = " + resultAsString(lander));
+//          part of commented out mechanism for covergence testing, see comments above
 //			runTimes.add(finalTime);
 //			stepsSinceLastChange.add(sslc);
 			qlo.endSession(sessionId);
-/*
-			if (f.getFlappyBirdView().isRealTime()) {
-				FlappyBird.sleep(1000);
+
+			if (f.getRocketLanderView().isRealTime()) {
+				sleep(1000);
 			}
-*/
 		}
 	}
 }

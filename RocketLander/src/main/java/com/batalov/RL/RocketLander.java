@@ -12,8 +12,8 @@ public class RocketLander {
 	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(RocketLander.class.getName());
 	
-//	private static final Point2D GRAVITY = new Point2D.Float(0, -9.81f); // Earth, m/s^2
-	private static final Point2D GRAVITY = new Point2D.Float(0, -1.625f); // Moon, m/s^2
+	private static final Point2D GRAVITY = new Point2D.Float(0, -9.81f); // Earth, m/s^2
+//	private static final Point2D GRAVITY = new Point2D.Float(0, -1.625f); // Moon, m/s^2
 	private static final Point2D LANDED = new Point2D.Float(0, 0); // when landed, the gravity is compensated by ground resistance
 	
 	private static final float ENGINE_ACCELERATION = 10.0f; // m/s^2, per single engine
@@ -177,7 +177,7 @@ public class RocketLander {
 	}
 
 	public String toString() {
-		return String.format("< %s -- %s >, p = [%f, %f], v = [%f, %f], r = %f", (this.getBurnLeft() ? "*" : "."), (this.getBurnRight() ? "*" : "."), this.position.getX(), this.position.getY(), this.velocity.getX(), this.velocity.getY(), this.rotation);
+		return String.format("eng = < %s -- %s >, pos = [%f, %f], vel = [%f, %f], rot = %f", (this.getBurnLeft() ? "*" : "."), (this.getBurnRight() ? "*" : "."), this.position.getX(), this.position.getY(), this.velocity.getX(), this.velocity.getY(), this.rotation);
 	}
 
 	public boolean isLandedOrCrashed() {
