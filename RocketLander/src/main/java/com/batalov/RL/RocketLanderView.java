@@ -1,13 +1,11 @@
 package com.batalov.RL;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -28,6 +26,8 @@ public class RocketLanderView extends JPanel {
 
 	private Image stars;
 	private Image ground;
+    private Image rocket;
+    private Image flame;
 	private boolean realTime = true;
 
 	private volatile RocketLander lander;
@@ -37,6 +37,9 @@ public class RocketLanderView extends JPanel {
 		try {
 			this.stars = ImageIO.read(RocketLanderView.class.getResource("/stars2.png"));
 			this.ground = ImageIO.read(RocketLanderView.class.getResource("/surface.png"));
+            this.rocket = ImageIO.read(RocketLanderView.class.getResource("/lek.png"));
+            this.flame = ImageIO.read(RocketLanderView.class.getResource("/flame.png"));
+
 			this.stars = this.scaleDownBy(this.stars, 2);
 			this.ground = this.scaleDownBy(this.ground, 2);
 		} catch (final IOException ioe) {
@@ -159,7 +162,12 @@ public class RocketLanderView extends JPanel {
 			g.drawLine(xOrigin, yGround, xOrigin, yGround + metersToPixels(5));
 		}
 
-		this.drawRocketShip(g, xCenter, yRocket);
+		this.drawRocketShip2((Graphics2D) g, xCenter, yRocket);
+
+		// draw flames if crashed
+		if (this.flame != null && this.lander.crashed()) {
+		    g.drawImage(this.flame, xCenter - this.flame.getWidth(null)/2, yRocket - this.flame.getHeight(null), this);
+        }
 	}
 
 	private void drawRocketShip(final Graphics g, final int xRocket, int yRocket) {
@@ -178,14 +186,48 @@ public class RocketLanderView extends JPanel {
 		g.drawLine(xRocket-xProjection, yRocket+yProjection, xRocket+xProjection, yRocket-yProjection);
 		
 		// draw engine fire
-		g.setColor(Color.RED);
-		if (this.lander.getBurnLeft()) {
-			g.fillArc(xRocket-xProjection-bodyRadius, yRocket+yProjection-bodyRadius, bodyRadius*2, bodyRadius*2, (int)Math.round(Math.toDegrees(this.lander.getRotation())+260), 20);
-		}
-		if (this.lander.getBurnRight()) {
-			g.fillArc(xRocket+xProjection-bodyRadius, yRocket-yProjection-bodyRadius, bodyRadius*2, bodyRadius*2, (int)Math.round(Math.toDegrees(this.lander.getRotation())+260), 20);
+		if (this.lander.hasFuel()) { // only draw fire if actually has fuel
+            g.setColor(Color.RED);
+			if (this.lander.getBurnLeft()) {
+				g.fillArc(xRocket - xProjection - bodyRadius, yRocket + yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
+			}
+			if (this.lander.getBurnRight()) {
+				g.fillArc(xRocket + xProjection - bodyRadius, yRocket - yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
+			}
 		}
 	}
+
+
+    private void drawRocketShip2(final Graphics2D g, final int xRocket, int yRocket) {
+        // draw rocket ship
+        if (this.rocket != null) {
+            final int xRocketRotationPoint = this.rocket.getWidth(null)/2; // pixels from left edge image
+            final int yRocketRotationPoint = this.rocket.getHeight(null) - 21 - 3; // pixels from top edge of image
+            final AffineTransform at = new AffineTransform();
+            at.translate(xRocket, yRocket);
+            at.rotate(-this.lander.getRotation());
+            at.translate(-xRocketRotationPoint, -yRocketRotationPoint);
+            g.drawImage(this.rocket, at, null);
+        }
+
+        final float bodyRadiusMeters = 10;
+        final int bodyRadius = metersToPixels(bodyRadiusMeters); // pixels
+
+        final int xProjection = (int)Math.round(this.rocket.getWidth(null)/3/2*Math.cos(this.lander.getRotation()));
+        final int yProjection = (int)Math.round(this.rocket.getWidth(null)/3/2*Math.sin(this.lander.getRotation()));
+//        g.setColor(Color.BLUE);
+//        g.drawLine(xRocket-xProjection, yRocket+yProjection, xRocket+xProjection, yRocket-yProjection);
+        // draw engine fire
+        if (this.lander.hasFuel()) { // only draw fire if actually has fuel
+            g.setColor(Color.RED);
+            if (this.lander.getBurnLeft()) {
+                g.fillArc(xRocket - xProjection - bodyRadius, yRocket + yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
+            }
+            if (this.lander.getBurnRight()) {
+                g.fillArc(xRocket + xProjection - bodyRadius, yRocket - yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
+            }
+        }
+    }
 
 	public void updateView() {
 		SwingUtilities.invokeLater(new Runnable() {
