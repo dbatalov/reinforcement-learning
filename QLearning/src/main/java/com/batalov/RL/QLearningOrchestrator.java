@@ -396,6 +396,7 @@ public class QLearningOrchestrator {
 			this.envConfig = envConfig;
 			this.qAlgo = qAlgo;
 			this.policy = BestActionSelectionPolicy.DEFAULT_INSTANCE;
+//			this.policy = SoftmaxActionSelectionPolicy.DEFAULT_INSTANCE;
 		}
 
 		public QLearningAlgorithm getAlgorithm() {
