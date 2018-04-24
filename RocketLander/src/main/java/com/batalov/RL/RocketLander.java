@@ -18,7 +18,7 @@ public class RocketLander {
 	
 	private static final float ENGINE_ACCELERATION = 10.0f; // m/s^2, per single engine
 	
-	private static final float ROTATION_PER_SEC = (float)Math.toRadians(10);
+	private static final float ROTATION_PER_SEC = (float)Math.toRadians(20);
 
 	private Point2D position = new Point2D.Float(0, 0); // meters along X and Y from "origin"
 	private Point2D velocity = new Point2D.Float(0, 0); // vector, m/s

@@ -186,15 +186,13 @@ public class RocketLanderView extends JPanel {
 		g.drawLine(xRocket-xProjection, yRocket+yProjection, xRocket+xProjection, yRocket-yProjection);
 		
 		// draw engine fire
-		if (this.lander.hasFuel()) { // only draw fire if actually has fuel
-            g.setColor(Color.RED);
-			if (this.lander.getBurnLeft()) {
-				g.fillArc(xRocket - xProjection - bodyRadius, yRocket + yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
-			}
-			if (this.lander.getBurnRight()) {
-				g.fillArc(xRocket + xProjection - bodyRadius, yRocket - yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
-			}
-		}
+        g.setColor(Color.RED);
+        if (this.lander.getBurnLeft()) {
+            g.fillArc(xRocket - xProjection - bodyRadius, yRocket + yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
+        }
+        if (this.lander.getBurnRight()) {
+            g.fillArc(xRocket + xProjection - bodyRadius, yRocket - yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
+        }
 	}
 
 
@@ -218,14 +216,12 @@ public class RocketLanderView extends JPanel {
 //        g.setColor(Color.BLUE);
 //        g.drawLine(xRocket-xProjection, yRocket+yProjection, xRocket+xProjection, yRocket-yProjection);
         // draw engine fire
-        if (this.lander.hasFuel()) { // only draw fire if actually has fuel
-            g.setColor(Color.RED);
-            if (this.lander.getBurnLeft()) {
-                g.fillArc(xRocket - xProjection - bodyRadius, yRocket + yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
-            }
-            if (this.lander.getBurnRight()) {
-                g.fillArc(xRocket + xProjection - bodyRadius, yRocket - yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
-            }
+        g.setColor(Color.RED);
+        if (this.lander.getBurnLeft()) {
+            g.fillArc(xRocket - xProjection - bodyRadius, yRocket + yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
+        }
+        if (this.lander.getBurnRight()) {
+            g.fillArc(xRocket + xProjection - bodyRadius, yRocket - yProjection - bodyRadius, bodyRadius * 2, bodyRadius * 2, (int) Math.round(Math.toDegrees(this.lander.getRotation()) + 260), 20);
         }
     }
 
