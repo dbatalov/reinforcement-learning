@@ -224,8 +224,14 @@ public class QLearningOrchestrator {
 		}
 
 		private static int floatToInt(final float f, final int precision) {
-			final String fmt = String.format("%%.%df", precision);
-			return Integer.valueOf(String.format(fmt, f).replace(".", ""));
+			int result = 0;
+			if (precision > 0)  {
+				double x = f * Math.pow(10, precision);
+				result = (int) Math.round(x);
+			} else {
+				result = (int) Math.round(f);
+			}
+			return result;
 		}
 
 		private FixedPointInputDescriptor(final int min, final int max, final int precision) {
