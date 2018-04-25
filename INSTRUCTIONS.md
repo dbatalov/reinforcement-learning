@@ -90,7 +90,7 @@ Firing a single engine will cause the rocket to rotate in the corresponding dire
 Both engines must be fired to produce thrust in the direction the rocket is pointing.
 Release the arrow button to stop the corresponding engine from firing.
 
-![Simulator Screenshot](images/simulator-screenshot.png)
+![Simulator Screenshot](images/simulator-screenshot2.png)
 
 #### 6.2 Land the RocketLander
 
