@@ -2,7 +2,11 @@ package com.batalov.RL;
 
 import static org.junit.Assert.*;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -89,4 +93,43 @@ public class QLearningOrchestratorTest {
 		assertFalse(fpid1.matches(fpi2));
 		assertFalse(fpid2.matches(fpi1));
 	}
+
+	@Test
+	public void testDecimalSeparator() {
+		System.out.println(Locale.getDefault());
+		final String strPi = String.format("%f", Math.PI);
+        System.out.println(strPi);
+        assertTrue(strPi.contains(QLearningOrchestrator.DECIMAL_SEPARATOR));
+	}
+
+    private static int floatToInt(final float f, final int precision) {
+        int result = 0;
+        if (precision > 0)  {
+            double x = f * Math.pow(10, precision);
+            System.out.println(String.format("%40.20f", x));
+            result = (int) Math.round(x);
+        } else {
+            result = (int) Math.round(f);
+        }
+        return result;
+    }
+
+	@Test
+    public void testFloatToInt() {
+//	    final float f = 123456.0987654f;
+        float f = 0.21474836f;
+        f = Math.nextDown(f);
+        f = Math.nextDown(f);
+        f = Math.nextDown(f);
+//        f = Math.nextUp(f);
+//        f = Math.nextUp(f);
+//        f = Math.nextUp(f);
+//	    final float f = 1.2345678f;
+	    final int i = FixedPointInputDescriptor.floatToInt(f, 10);
+	    final int j = floatToInt(f, 10);
+	    System.out.println(String.format("%20.20f", f));
+	    System.out.println(String.format("%20d", i));
+        System.out.println(String.format("%20d", j));
+	    assertEquals(i, j);
+    }
 }

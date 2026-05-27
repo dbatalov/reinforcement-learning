@@ -56,7 +56,7 @@ public class RocketLanderView extends JPanel {
 				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 					updateBurnLeft(true);
 				}
-				else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 					updateBurnRight(true);
 				}
 				System.out.println(lander);
@@ -65,7 +65,7 @@ public class RocketLanderView extends JPanel {
 				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 					updateBurnLeft(false);
 				}
-				else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 					updateBurnRight(false);
 				}
 			}

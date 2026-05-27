@@ -13,7 +13,7 @@ import com.batalov.RL.LightsWorld.LightsState.LightsStateMarshaller;
 public class LightsWorldTest {
 
 	public static void main(final String[] args) {
-		final int runs = 10;
+		final int runs = 20;
 		final LightsStateMarshaller stateMarshaller = new LightsWorld.LightsState.LightsStateMarshaller();
 		final LightsActionMarshaller actionMarshaller = new LightsWorld.LightsAction.LightsActionMarshaller();
 //		final LightsState start = stateMarshaller.stateFromString("000,000,000"); // 3x3 board
@@ -26,7 +26,7 @@ public class LightsWorldTest {
 		final QActionSelectionPolicy policy = BestActionSelectionPolicy.DEFAULT_INSTANCE;
 		final ReinforcementFunction rf = new LightsWorld.LightsReinforcementTimeWasted();
 		final QTable qTable = new HashMapQTable();
-		final QLearningAlgorithm ql = new QLearningAlgorithm(qTable, 1.0, 0.1);
+		final QLearningAlgorithm ql = new QLearningAlgorithm(qTable, 1.0, 1);
 		for (int i = 0; i < runs; i++) {
 			final LightsWorld.LightsState state = new LightsWorld.LightsState(start);
 			int time = 0;
@@ -40,7 +40,7 @@ public class LightsWorldTest {
 	 			System.out.println();
 				ql.update(oldState, action, state, reinforcement);
 				// examine the state of the Q table
-	 			System.out.println(qTable);
+//	 			System.out.println(qTable);
 				time++;
 			}
 			System.out.println("run = " + i + ", time = " + time);
