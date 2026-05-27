@@ -30,7 +30,35 @@ public class RocketLanderExperiment {
 
 	// penalize crash (or out of bounds) heavily, otherwise penalize for time wasted
 	private static Double reinforcement1(final RocketLander oldState, final String actionName, final RocketLander lander) {
-		return lander.crashed() || isTooHigh(lander) ? -1000.0 : -1.0;
+		return lander.crashed() || isTooHigh(lander) ? -1000.0 : -1;
+	}
+
+	// penalize crash (or too high) heavily, otherwise penalize for time wasted when engines are burning
+	private static Double reinforcement2(final RocketLander oldState, final String actionName, final RocketLander lander) {
+        // SOLUTION FOR TASK 3
+		if (lander.crashed() || isTooHigh(lander)) {
+			return -1000.0;
+		}
+		else if (actionName.equals("burn")) {
+			return  -1.0;
+		}
+		else {
+			return 0.0;
+		}
+	}
+
+	// penalize crash (or too high) heavily, otherwise penalize for burning engines that cause the rocket to go up
+	private static Double reinforcement3(final RocketLander oldState, final String actionName, final RocketLander lander) {
+        // SOLUTION FOR TASK 4
+		if (lander.crashed() || isTooHigh(lander)) {
+			return -1000.0;
+		}
+		else if (actionName.equals("burn") && lander.getVelocity().getY() > 0) {
+			return  -5.0;
+		}
+		else {
+			return -1.0;
+		}
 	}
 
 	private static String resultAsString(final RocketLander lander) {

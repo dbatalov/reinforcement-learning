@@ -1,5 +1,7 @@
 package com.batalov.RL;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,6 +16,14 @@ import java.util.TreeMap;
 public class QLearningOrchestrator {
 
 	private static final Logger LOG = Logger.getLogger(QLearningOrchestrator.class.getName());
+
+	// package access due to reference in unit test
+	static final String DECIMAL_SEPARATOR; // based on Locale
+	static {
+		final DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance();
+		final DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
+		DECIMAL_SEPARATOR = String.valueOf(symbols.getDecimalSeparator());
+	}
 
 	public interface Input {
 		public Object getValue();
@@ -223,15 +233,12 @@ public class QLearningOrchestrator {
 			return new FixedPointInputDescriptor(floatToInt(min, precision), floatToInt(max, precision), precision);
 		}
 
-		private static int floatToInt(final float f, final int precision) {
-			int result = 0;
-			if (precision > 0)  {
-				double x = f * Math.pow(10, precision);
-				result = (int) Math.round(x);
-			} else {
-				result = (int) Math.round(f);
-			}
-			return result;
+		// package access due to unit tests, private otherwise
+		static int floatToInt(final float f, final int precision) {
+			final String fmt = String.format("%%.%df", precision);
+			final String formattedFloat = String.format(fmt, f);
+			final String noSeparator = formattedFloat.replace(DECIMAL_SEPARATOR, "");
+			return Integer.valueOf(noSeparator);
 		}
 
 		private FixedPointInputDescriptor(final int min, final int max, final int precision) {

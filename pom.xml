@@ -13,6 +13,7 @@
     <modules>
         <module>QLearning</module>
         <module>RocketLander</module>
+        <module>FlappyBird</module>
     </modules>
 
 </project>

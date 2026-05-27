@@ -11,19 +11,19 @@ SETUP
 * you are running the following on a machine (e.g. laptop) with **GUI capabilities** and not on a text terminal!
 * running on a headless server (e.g. AWS EC2 Linux machine) **is not recommended**, even if you setup remote GUI such as XWindows.
 
-### 1. Make sure Java SE Development Kit 8 is installed (`javac` compiler required)
+### 1. Make sure Java SE Development Kit 8 or later is installed (`javac` compiler required)
 
 
     % java -version
-    java version "1.8.0_161"
-    Java(TM) SE Runtime Environment (build 1.8.0_161-b12)
-    Java HotSpot(TM) 64-Bit Server VM (build 25.161-b12, mixed mode)
+    openjdk version "21.0.3" 2024-04-16
+    OpenJDK Runtime Environment (build 21.0.3+9)
+    OpenJDK 64-Bit Server VM (build 21.0.3+9, mixed mode)
     
     % javac -version
-    javac 1.8.0_161
+    javac 21.0.3
 
 
-Go to [installation page](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) otherwise.
+Go to [Adoptium](https://adoptium.net) to download the latest JDK otherwise.
 
 ### 2. Make sure Maven is installed
 
@@ -66,7 +66,7 @@ Make sure `JAVA_HOME` environment variable is set correctly.
 ### 5. Build the code using Maven
 
     % cd reinforcement-learning
-    % mvn package
+    % mvn install
     
 This command will result in lengthy output that should end with a successful build.
 Now you are ready to run the Rocket Lander example.
@@ -75,11 +75,7 @@ Now you are ready to run the Rocket Lander example.
 
 #### 6.1 Start the simulator
 
-First, put the compiled jar file into local maven repository 
-
-    % mvn install
-    
-Then, run the RocketLander simulator (this must be done from the RocketLander subdirectory)
+Run the RocketLander simulator (this must be done from the RocketLander subdirectory)
 
     % cd RocketLander
     % mvn exec:java -Dexec.mainClass=com.batalov.RL.RocketLanderFrame
